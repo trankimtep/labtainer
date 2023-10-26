@@ -62,11 +62,20 @@ ENV HOME /home/$user_name
 # Install files in the user home directory
 #
 ADD $labdir/$imagedir/home_tar/home.tar $HOME
+ADD $labdir/$imagedir/caculator.sh $HOME
+ADD $labdir/$imagedir/checking_step2.py $HOME
 # remove after docker fixes problem with empty tars
 RUN rm -f $HOME/home.tar
 ADD $labdir/$lab.tar.gz $HOME
+RUN echo $labdir
 #
 #  The first thing that executes on the container.
 #
 USER root
+
+RUN chmod +x $HOME/checking_step2.sh
+RUN touch /etc/result
+RUN chown $user_name:$user_name /etc/result
+ENTRYPOINT ["home/ubuntu/checking_step2.sh"]
 CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
+
